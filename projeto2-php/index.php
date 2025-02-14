@@ -27,7 +27,7 @@ $user_email = $_SESSION['usuario'];
         </div>
     </nav>
     <div class="container text-center mt-5">
-        <h1>Bem-vindo ao Dashboard!</h1>
+        <h1>Seja Bem-vindo!</h1>
         <h2>Usuário de email: <?php echo htmlspecialchars($user_email); ?></h2>
         <p class="lead">Esse é o modelo 2!</p>
     </div>
