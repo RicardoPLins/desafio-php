@@ -1,28 +1,32 @@
 <?php
-session_start();
-if (isset($_SESSION['user_id'])) {
-    // Se o usuário já estiver logado, redireciona para o main
-    header("Location: /public/main.php");
+header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS"); // Métodos permitidos
+header("Access-Control-Allow-Headers: Content-Type, Authorization"); // Cabeçalhos permitidos
+header("Access-Control-Allow-Credentials: true"); // Permitir cookies e credenciais
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit;
 }
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST");
-header("Content-Type: application/json");
-
 require "../app/database.php";
+
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo json_encode(["status" => "error", "message" => "Método inválido"]);
+    exit;
+}
 
 $data = json_decode(file_get_contents("php://input"), true);
 
-if (!isset($data['email']) || !isset($data['senha'])) {
+if (empty($data['email']) || empty($data['senha'])) {
     echo json_encode(["status" => "error", "message" => "Campos obrigatórios!"]);
     exit;
 }
 
 $email = $data['email'];
-$senha = password_hash($data['senha'], PASSWORD_DEFAULT); // Criptografando a senha
 
-// Verifica se o email já existe
 $sql = "SELECT id FROM usuarios WHERE email = :email";
 $stmt = $pdo->prepare($sql);
 $stmt->execute(['email' => $email]);
@@ -33,12 +37,15 @@ if ($user) {
     exit;
 }
 
-// Insere o novo usuário no banco de dados
+$senhaCriptografada = password_hash($data['senha'], PASSWORD_DEFAULT);
+
 $sql = "INSERT INTO usuarios (email, senha) VALUES (:email, :senha)";
 $stmt = $pdo->prepare($sql);
-$stmt->execute(['email' => $email, 'senha' => $senha]);
+$stmt->execute(['email' => $email, 'senha' => $senhaCriptografada]);
 
-// Cria a sessão para o novo usuário
-$_SESSION['user_id'] = $pdo->lastInsertId();
+$user_id = $pdo->lastInsertId();
+
+$_SESSION['user_id'] = $user_id; // Cria a sessão do usuário após o cadastro
 
 echo json_encode(["status" => "success", "message" => "Cadastro realizado com sucesso!"]);
+?>

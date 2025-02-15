@@ -26,3 +26,4 @@ if ($user && password_verify($data['senha'], $user['senha'])) {
 } else {
     echo json_encode(["status" => "error", "message" => "Usuário ou senha incorretos!"]);
 }
+?>

@@ -6,7 +6,6 @@ const Main = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Verifica se o usuário está autenticado
         fetch("http://localhost:5000/public/main.php", {
             method: "GET",
             credentials: "include", // Envia cookies de sessão
@@ -29,7 +28,6 @@ const Main = () => {
 
     const handleLogout = async () => {
         try {
-            // Faz o logout no backend
             const response = await fetch("http://localhost:5000/public/logout.php", {
                 method: "POST",
                 credentials: "include", // Envia cookies de sessão
@@ -38,8 +36,7 @@ const Main = () => {
             const data = await response.json();
 
             if (data.status === "success") {
-                // Após o logout com sucesso, redireciona para a página de login
-                navigate("/");
+                navigate("/"); // Redireciona para a página de login após logout
             } else {
                 alert("Erro ao sair: " + data.message);
             }

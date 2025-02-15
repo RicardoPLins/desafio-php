@@ -8,23 +8,29 @@ const Register = () => {
 
     const handleRegister = async (e) => {
         e.preventDefault();
-        const response = await fetch("http://localhost:5000/public/register.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, senha }),
-        });
+        console.log("Botão de cadastro clicado!"); // Verifique no console
 
-        const data = await response.json();
-        if (data.status === "success") {
-            alert("Cadastro realizado! Faça login.");
-            navigate("/");
-        } else {
-            alert(data.message);
+        try {
+            const response = await fetch("http://localhost:5000/public/register.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, senha }),
+            });
+
+            const data = await response.json();
+            if (data.status === "success") {
+                alert("Cadastro realizado! Faça login.");
+                navigate("/"); // Redireciona para o login
+            } else {
+                alert(data.message); // Exibe mensagem de erro
+            }
+        } catch (error) {
+            alert("Erro ao conectar com o servidor.");
         }
     };
 
     return (
-        <div style={{ textAlign: "center", padding: "50px" }}>
+        <div>
             <h1>Cadastro</h1>
             <form onSubmit={handleRegister}>
                 <input
@@ -34,7 +40,6 @@ const Register = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
-                <br />
                 <input
                     type="password"
                     placeholder="Senha"
@@ -42,7 +47,6 @@ const Register = () => {
                     onChange={(e) => setSenha(e.target.value)}
                     required
                 />
-                <br />
                 <button type="submit">Cadastrar</button>
             </form>
             <p>
